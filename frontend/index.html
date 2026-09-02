@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MY-PRIVATE-AI</title>
+<style>
+body{margin:0;font-family:system-ui;background:#111;color:#eee}main{max-width:900px;margin:auto;height:100vh;display:flex;flex-direction:column}header{padding:18px;border-bottom:1px solid #333;font-weight:700}#chat{flex:1;overflow:auto;padding:20px}.msg{padding:12px 15px;margin:10px 0;border-radius:12px;white-space:pre-wrap}.user{background:#263238;margin-left:15%}.assistant{background:#1d1d1d;margin-right:15%}form{display:flex;gap:10px;padding:15px;border-top:1px solid #333}textarea{flex:1;resize:none;padding:12px;border-radius:10px;background:#222;color:#fff;border:1px solid #444}button{padding:0 20px;border:0;border-radius:10px;cursor:pointer}
+</style></head>
+<body><main><header>MY-PRIVATE-AI</header><section id="chat"></section><form><textarea rows="2" placeholder="Nachricht..."></textarea><button>Senden</button></form></main>
+<script>
+const box=document.querySelector('#chat'),form=document.querySelector('form'),input=document.querySelector('textarea');const messages=[];
+function add(role,content){const d=document.createElement('div');d.className='msg '+role;d.textContent=content;box.appendChild(d);box.scrollTop=box.scrollHeight}
+form.onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;messages.push({role:'user',content:text});add('user',text);input.value='';add('assistant','…');try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});if(!r.ok)throw new Error('HTTP '+r.status);const data=await r.json();box.lastChild.remove();messages.push(data.message);add('assistant',data.message.content)}catch(err){box.lastChild.textContent='Fehler: '+err.message}};
+</script></body></html>
